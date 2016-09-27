@@ -1,0 +1,24 @@
+{
+  "name": "collab-cloud-ide",
+  "version": "1.0.0",
+  "description": "Cloud IDE built on Ace editor and Google Realtime API.",
+  "main": "index.js",
+  "scripts": {
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://hooitong@github.com/collab-tools/collab-cloud-ide.git"
+  },
+  "keywords": [
+    "cloud",
+    "ide",
+    "collab"
+  ],
+  "author": "Yeap Hooi Tong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/collab-tools/collab-cloud-ide/issues"
+  },
+  "homepage": "https://github.com/collab-tools/collab-cloud-ide#readme"
+}
