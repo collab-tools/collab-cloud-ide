@@ -63,6 +63,7 @@ function onFileLoaded(doc) {
   wireTextBoxes(collaborativeString);
 }
 
+
 // Connects the text boxes to the collaborative string
 let ignore = false;
 function wireTextBoxes(collaborativeString) {
@@ -73,13 +74,18 @@ function wireTextBoxes(collaborativeString) {
   })
 
   collaborativeString.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, function() {
-    console.log('abc');
     ignore = true;
+    var pos = editor.session.selection.toJSON()
     editor.getSession().setValue(collaborativeString.getText());
+    editor.session.selection.fromJSON(pos)
     ignore = false;
   });
 
   collaborativeString.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, function() {
+    ignore = true;
+    var pos = editor.session.selection.toJSON()
     editor.getSession().setValue(collaborativeString.getText());
+    editor.session.selection.fromJSON(pos)
+    ignore = false;
   });
 }
