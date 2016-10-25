@@ -3,10 +3,11 @@
   "private": true,
   "dependencies": {
     "bootstrap": "~3.3.5",
-    "modernizr": "~2.8.1",
-    "ace-builds": "^1.2.5",
+    "vue": "^2.0.3",
+    "vue-resource": "^1.0.3",
+    "octokat": "^0.4.18",
     "jsdiff": "^2.2.2",
-    "octokat": "^0.4.18"
+    "ace-builds": "^1.2.5"
   },
   "overrides": {
     "bootstrap": {
@@ -20,6 +21,6 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.1.0"
+    "mocha": "^3.1.2"
   }
 }
