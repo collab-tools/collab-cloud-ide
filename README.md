@@ -1,2 +1,2 @@
-# javascript-cloud-ide
+# Collab Cloud IDE
 Full Javascript Implementation of Collab IDE

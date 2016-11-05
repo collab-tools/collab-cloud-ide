@@ -1,8 +1,27 @@
-var editor = ace.edit('editor');
+import ace from 'brace';
+import bootstrap from 'bootstrap';
+import diff from 'jsdiff';
+import Vue from 'vue';
+import VueResource from 'vue-resource';
+
+// Unamed imports of used Ace components
+import 'brace/mode/javascript';
+import 'brace/theme/monokai';
+
+console.log(window.location.pathname);
+
+
+// Render Vue Component
+new Vue({
+  el: '#app',
+  render: h => h(App)
+})
+
+const editor = ace.edit('editor');
 editor.setTheme('ace/theme/monokai');
 editor.getSession().setMode('ace/mode/javascript');
 editor.$blockScrolling = Infinity;
-var clientId = '961636068343-3aehjbc272hsf1ikr798b7j6t0k6pkpk.apps.googleusercontent.com';
+
 
 if (!/^([0-9])$/.test(clientId[0])) {
   alert('Invalid Client ID - did you forget to insert your application Client ID?');
@@ -14,19 +33,19 @@ authorize();
 
 function authorize() {
   // Attempt to authorize
-  realtimeUtils.authorize(function(response){
-    if(response.error){
+  realtimeUtils.authorize(function (response) {
+    if (response.error) {
       // Authorization failed because this is the first time the user has used your application,
       // show the authorize button to prompt them to authorize manually.
       var button = document.getElementById('auth_button');
       button.classList.add('visible');
       button.addEventListener('click', function () {
-        realtimeUtils.authorize(function(response){
+        realtimeUtils.authorize(function (response) {
           start();
         }, true);
       });
     } else {
-        start();
+      start();
     }
   }, false);
 }
@@ -40,7 +59,7 @@ function start() {
     realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
   } else {
     // Create a new document, add it to the URL
-    realtimeUtils.createRealtimeFile('New Quickstart File', function(createResponse) {
+    realtimeUtils.createRealtimeFile('New Quickstart File', function (createResponse) {
       window.history.pushState(null, null, '?id=' + createResponse.id);
       realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
     });
@@ -66,14 +85,15 @@ function onFileLoaded(doc) {
 
 // Connects the text boxes to the collaborative string
 let ignore = false;
+
 function wireTextBoxes(collaborativeString) {
   editor.getSession().setValue(collaborativeString.getText());
-  editor.on('input', function() {
-    if(!ignore)
-   collaborativeString.setText(editor.getSession().getValue());
+  editor.on('input', function () {
+    if (!ignore)
+      collaborativeString.setText(editor.getSession().getValue());
   })
 
-  collaborativeString.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, function() {
+  collaborativeString.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, function () {
     ignore = true;
     var pos = editor.session.selection.toJSON()
     editor.getSession().setValue(collaborativeString.getText());
@@ -81,7 +101,7 @@ function wireTextBoxes(collaborativeString) {
     ignore = false;
   });
 
-  collaborativeString.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, function() {
+  collaborativeString.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, function () {
     ignore = true;
     var pos = editor.session.selection.toJSON()
     editor.getSession().setValue(collaborativeString.getText());
