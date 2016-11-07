@@ -1,7 +1,22 @@
 {
-  "database": {
+  "store": {
     "host": "",
     "username": "",
     "password": ""
+  },
+  "database": {
+    "name": "",
+    "username": "",
+    "password": "",
+    "options": {
+      "host": "",
+      "dialect": "",
+      "pool": {
+        "max": 0,
+        "min": 0,
+        "idle": 0
+      },
+      "logging": false
+    }
   }
 }

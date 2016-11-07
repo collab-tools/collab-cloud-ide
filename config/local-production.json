@@ -1,7 +1,23 @@
 {
-  "database": {
+  "store": {
     "host": "localhost",
     "username": "root",
-    "password": ""
-  }
+    "password": "nuscollabdemo"
+  },
+  "database": {
+    "name": "collab",
+    "username": "root",
+    "password": "nuscollabdemo",
+    "options": {
+      "host": "localhost",
+      "dialect": "mysql",
+      "pool": {
+        "max": 5,
+        "min": 0,
+        "idle": 10000
+      },
+      "logging": false
+    }
+  },
+  "jwt_secret": "collabisawesome"
 }

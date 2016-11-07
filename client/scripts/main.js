@@ -1,21 +1,24 @@
+// Unamed imports of used Ace components
+import 'brace/mode/javascript';
+import 'brace/theme/monokai';
+
 import ace from 'brace';
 import bootstrap from 'bootstrap';
 import diff from 'jsdiff';
 import Vue from 'vue';
-import VueResource from 'vue-resource';
+import AppView from './app.vue';
 
-// Unamed imports of used Ace components
-import 'brace/mode/javascript';
-import 'brace/theme/monokai';
 
 console.log(window.location.pathname);
 
 
 // Render Vue Component
 new Vue({
-  el: '#app',
-  render: h => h(App)
-})
+  el: '#app-container',
+  render(createElement) {
+    return createElement(AppView);
+  }
+});
 
 const editor = ace.edit('editor');
 editor.setTheme('ace/theme/monokai');
