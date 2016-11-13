@@ -94,14 +94,11 @@ function upsertFile(req, res, next) {
   });
 
   const upsertOpr = (masterFile) => {
-    console.log('FUCK');
-    console.log(masterFile);
     if (!masterFile) return github.repos.createFile({ owner, repo, path, message, content: encodedString });
     return github.repos.updateFile({ owner, repo, path, message, content: encodedString, sha: masterFile.sha });
   };
 
   const response = payload => res.json(payload);
-  console.log('Kappa');
   return github.repos.getContent({ owner, repo, path })
     .then(upsertOpr)
     .then(response)

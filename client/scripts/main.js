@@ -184,7 +184,6 @@ var pushBtn = document.getElementById('push_button');
 pushBtn.classList.add('visible');
 pushBtn.addEventListener('click', function () {
   if (activeFile) {
-    console.log(collaborativeString.getText());
     $.ajax({
       url: "/api/git/file?repo=" + activeProject.githubRepoName + '&owner=' + activeProject.githubRepoOwner + '&path=' + activeFile.id,
       type: "PUT",
@@ -192,9 +191,7 @@ pushBtn.addEventListener('click', function () {
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Authorization', 'bearer ' + token);
       },
-      success: function (payload) {
-        console.log(payload);
-      }
+      success: function (payload) {}
     });
   }
 });
