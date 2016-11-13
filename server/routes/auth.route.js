@@ -6,7 +6,6 @@ import authCtrl from '../controllers/auth.controller';
 const router = express.Router(); // eslint-disable-line new-cap
 const auth = jwt({
   secret: config.jwt_secret,
-  userProperty: 'auth',
 });
 router.use(auth);
 

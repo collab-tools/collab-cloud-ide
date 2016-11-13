@@ -6,12 +6,11 @@ import gitCtrl from '../controllers/git.controller';
 const router = express.Router(); // eslint-disable-line new-cap
 const auth = jwt({
   secret: config.jwt_secret,
-  userProperty: 'auth',
 });
 router.use(auth);
 
 router.route('/tree')
-  .post(gitCtrl.getFileTree);
+  .get(gitCtrl.getFileTree);
 
 router.route('/file')
   .get(gitCtrl.getFile)

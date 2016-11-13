@@ -14,6 +14,12 @@ function getFileTree(req, res, next) {
   };
 
   const response = payload => res.json(payload);
+
+  github.authenticate({
+    type: 'oauth',
+    token: req.user.github_token,
+  });
+
   return github.repos.getBranch({ owner, repo, branch: 'master' })
     .then(retrieveTrees)
     .then(response)
@@ -26,6 +32,11 @@ function getFile(req, res, next) {
   const path = req.query.path;
   const response = payload => res.json(payload);
 
+  github.authenticate({
+    type: 'oauth',
+    token: req.user.github_token,
+  });
+
   return github.repos.getContent({ owner, repo, path })
     .then(response)
     .catch(next);
@@ -37,10 +48,15 @@ function createFile(req, res, next) {
   const path = req.query.path;
   const message = req.query.message;
   const content = req.body.content;
-  const buffer = new Buffer(content);
+  const encodedString = new Buffer(content).toString('base64');
   const response = payload => res.json(payload);
 
-  return github.repos.createFile({ owner, repo, path, message, content: buffer.toString('base64') })
+  github.authenticate({
+    type: 'oauth',
+    token: req.user.github_token,
+  });
+
+  return github.repos.createFile({ owner, repo, path, message, content: encodedString })
     .then(response)
     .catch(next);
 }
@@ -53,6 +69,11 @@ function deleteFile(req, res, next) {
   const sha = req.query.sha;
   const response = payload => res.json(payload);
 
+  github.authenticate({
+    type: 'oauth',
+    token: req.user.github_token,
+  });
+
   return github.repos.deleteFile({ owner, repo, path, message, sha })
     .then(response)
     .catch(next);
@@ -64,18 +85,24 @@ function upsertFile(req, res, next) {
   const repo = req.query.repo;
   const path = req.query.path;
   const message = req.query.message;
-  const content = req.query.content;
   const sha = req.query.sha;
-  const buffer = new Buffer(content);
+  const content = req.body.content;
+  const encodedString = new Buffer(content).toString('base64');
+
+  github.authenticate({
+    type: 'oauth',
+    token: req.user.github_token,
+  });
+
   const checkExist = (payload) => {
     if (payload.errors) {
-      return github.repos.createFile({ owner, repo, path, message, content: buffer.toString('base64') });
+      return github.repos.createFile({ owner, repo, path, message, content: encodedString });
     }
     return payload;
   };
   const response = payload => res.json(payload);
 
-  return github.repos.updateFile({ owner, repo, path, message, content: buffer.toString('base64'), sha })
+  return github.repos.updateFile({ owner, repo, path, message, content: encodedString, sha })
     .then(checkExist)
     .then(response)
     .catch(next);

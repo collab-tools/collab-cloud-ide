@@ -7,10 +7,10 @@
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "compile": "npm run compile-express & npm run compile-vue",
     "compile-express": "rimraf dist && babel server -d dist",
-    "compile-vue": "rimraf public/dist && webpack --progress --hide-modules",
+    "compile-vue": "rimraf client/dist && cross-env NODE_ENV=production webpack --config ./client/webpack.config.js --progress --hide-modules",
     "dev": "npm run dev-express & npm run dev-vue",
-    "dev-express": "cross-env NODE_ENV=dev nodemon server/server.js -L --watch server/server.js --exec babel-node",
-    "dev-vue": "webpack --progress --color --watch"
+    "dev-express": "cross-env NODE_ENV=dev nodemon server/server.js --watch server --exec babel-node",
+    "dev-vue": "cross-env NODE_ENV=development webpack-dev-server --config ./client/webpack.config.js --open --inline --hot --port 9000"
   },
   "repository": {
     "type": "git",
@@ -45,6 +45,7 @@
     "http-status": "^0.2.3",
     "jsdiff": "^1.1.1",
     "jsonwebtoken": "^7.1.9",
+    "lodash": "^4.16.6",
     "morgan": "^1.7.0",
     "redis": "^2.6.2",
     "vue": "^2.0.5",
@@ -75,6 +76,7 @@
     "mocha": "^3.1.2",
     "rimraf": "^2.5.4",
     "vue-loader": "^9.7.0",
-    "webpack": "^1.13.3"
+    "webpack": "^2.1.0-beta.25",
+    "webpack-dev-server": "^2.1.0-beta.0"
   }
 }
