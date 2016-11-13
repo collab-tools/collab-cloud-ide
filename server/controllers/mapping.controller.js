@@ -28,7 +28,8 @@ function getMappings(req, res, next) {
 
 function setMappings(req, res, next) {
   const repo = req.query.repo;
-  const mappings = req.body.mappings;
+  const mappings = req.body;
+
   const err = new APIError('Invalid use of resource.', httpStatus.BAD_REQUEST);
   if (!mappings) return next(err);
   const response = () => res.status(httpStatus.OK).end();

@@ -1,34 +1,11 @@
-// Unamed imports of used Ace components
-import 'brace/mode/javascript';
-import 'brace/theme/monokai';
-
-import ace from 'brace';
-import bootstrap from 'bootstrap';
-import diff from 'jsdiff';
-import Vue from 'vue';
-import AppView from './app.vue';
-
-
-console.log(window.location.pathname);
-
-
-// Render Vue Component
-new Vue({
-  el: '#app-container',
-  render(createElement) {
-    return createElement(AppView);
-  }
-});
-
-const editor = ace.edit('editor');
-editor.setTheme('ace/theme/monokai');
-editor.getSession().setMode('ace/mode/javascript');
+/* eslint-disable */
+var editor = ace.edit('editor');
+editor.setTheme('ace/theme/xcode');
+editor.getSession().setMode('ace/mode/c_cpp');
 editor.$blockScrolling = Infinity;
+document.getElementById('editor').style.fontSize = '18px';
+var clientId = '961636068343-3aehjbc272hsf1ikr798b7j6t0k6pkpk.apps.googleusercontent.com';
 
-
-if (!/^([0-9])$/.test(clientId[0])) {
-  alert('Invalid Client ID - did you forget to insert your application Client ID?');
-}
 // Create a new instance of the realtime utility with your client ID.
 var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 
@@ -53,20 +30,112 @@ function authorize() {
   }, false);
 }
 
+function getParam(name) {
+  var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
 function start() {
-  // With auth taken care of, load a file, or create one if there
-  // is not an id in the URL.
-  var id = realtimeUtils.getParam('id');
-  if (id) {
-    // Load the document id from the URL
-    realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
-  } else {
-    // Create a new document, add it to the URL
-    realtimeUtils.createRealtimeFile('New Quickstart File', function (createResponse) {
-      window.history.pushState(null, null, '?id=' + createResponse.id);
-      realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
+  $.ajax({
+    url: "/api/auth/verify",
+    type: "POST",
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Authorization', 'bearer ' + getParam('auth'));
+    },
+    success: function (payload) {
+      token = payload.token;
+      user = payload.user;
+      activeProject = _.find(user.projects, { id: getParam('project') });
+      getFileTree();
+    }
+  });
+}
+
+function getFileTree() {
+  $.ajax({
+    url: "/api/git/tree?owner=" + activeProject.githubRepoOwner + "&repo=" + activeProject.githubRepoName,
+    type: "GET",
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Authorization', 'bearer ' + token);
+    },
+    success: function (payload) {
+      // translate flat hierachy to folder style
+      files = _.map(payload.tree, function (tree) {
+        var splitter = tree.path.split('/');
+        tree.id = splitter.pop();
+        tree.parent = splitter.length == 0 ? '#' : splitter.pop();
+        tree.text = tree.id;
+        return tree;
+      });
+      $('#navigation')
+        .on('changed.jstree', function (e, data) {
+          selected = data.instance.get_node(_.head(data.selected)).original;
+        })
+        .jstree({
+          'core': {
+            'data': files
+          }
+        });
+    }
+  });
+}
+
+var openBtn = document.getElementById('open_button');
+openBtn.classList.add('visible');
+openBtn.addEventListener('click', function () {
+  if (selected) {
+    $.ajax({
+      url: "/api/mapping?repo=" + activeProject.githubRepoName + "&files=" + selected.id,
+      type: "GET",
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Authorization', 'bearer ' + token);
+      },
+      success: function (payload) {
+        activeFile = selected;
+        if (payload[selected.id] === null) {
+          // if no mapping, call realtime to create file
+          $.ajax({
+            url: "/api/git/file?repo=" + activeProject.githubRepoName + "&owner=" + activeProject.githubRepoOwner + "&path=" + selected.id,
+            type: "GET",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader('Authorization', 'bearer ' + token);
+            },
+            success: function (payload) {
+              activeFile.content = atob(payload.content);
+              createFile();
+            }
+          });
+        } else {
+          // get mapping, load real time id
+          loadFile(payload[selected.id]);
+        }
+      }
     });
   }
+});
+
+function createFile() {
+  // Create a new document, add it to the URL
+  realtimeUtils.createRealtimeFile(selected.id, function (createResponse) {
+    var mappings = {};
+    mappings[selected.id] = createResponse.id
+    console.log(mappings);
+    $.ajax({
+      url: "/api/mapping?repo=" + activeProject.githubRepoName,
+      type: "PUT",
+      data: mappings,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Authorization', 'bearer ' + token);
+      },
+      success: function (payload) {
+        realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
+      }
+    });
+  });
+}
+
+function loadFile(id) {
+  realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
 }
 
 // The first time a file is opened, it must be initialized with the
@@ -74,17 +143,16 @@ function start() {
 // to our model at the root.
 function onFileInitialize(model) {
   var string = model.createString();
-  string.setText('Welcome to the Quickstart App!');
-  model.getRoot().set('demo_string', string);
+  string.setText(activeFile.content);
+  model.getRoot().set('collabString', string);
 }
 
 // After a file has been initialized and loaded, we can access the
 // document. We will wire up the data model to the UI.
 function onFileLoaded(doc) {
-  var collaborativeString = doc.getModel().getRoot().get('demo_string');
+  var collaborativeString = doc.getModel().getRoot().get('collabString');
   wireTextBoxes(collaborativeString);
 }
-
 
 // Connects the text boxes to the collaborative string
 let ignore = false;
@@ -112,3 +180,23 @@ function wireTextBoxes(collaborativeString) {
     ignore = false;
   });
 }
+
+var pushBtn = document.getElementById('push_button');
+pushBtn.classList.add('visible');
+pushBtn.addEventListener('click', function () {
+  if (activeFile) {
+
+  }
+});
+
+var deleteBtn = document.getElementById('delete_button');
+deleteBtn.classList.add('visible');
+deleteBtn.addEventListener('click', function () {
+  if (selected && selected.parent !== '#') {
+    // get mapping, load real time id
+
+    // if no mapping, call realtime to create file
+
+    // set meta attributes of currently opened file
+  }
+});

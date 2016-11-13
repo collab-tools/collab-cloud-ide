@@ -5,12 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node dist/server.js",
-    "compile": "npm run compile-express & npm run compile-vue",
-    "compile-express": "rimraf dist && babel server -d dist",
-    "compile-vue": "rimraf client/dist && cross-env NODE_ENV=production webpack --config ./client/webpack.config.js --progress --hide-modules",
-    "dev": "npm run dev-express & npm run dev-vue",
-    "dev-express": "cross-env NODE_ENV=dev nodemon server/server.js --watch server --exec babel-node",
-    "dev-vue": "cross-env NODE_ENV=development webpack-dev-server --config ./client/webpack.config.js --open --inline --hot --port 9000"
+    "dev": "cross-env NODE_ENV=dev nodemon server.js --watch server --exec babel-node"
   },
   "repository": {
     "type": "git",

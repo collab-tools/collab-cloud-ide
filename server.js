@@ -12,8 +12,8 @@ import httpStatus from 'http-status';
 import morgan from 'morgan';
 import redis from 'redis';
 import winston from 'winston';
-import APIError from './helpers/api.error';
-import routes from './routes/index.route';
+import APIError from './server/helpers/api.error';
+import routes from './server/routes/index.route';
 
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
 
@@ -61,6 +61,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/api', routes);
+app.use(express.static('client'));
 
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {

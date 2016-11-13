@@ -1,26 +1,48 @@
 <!doctype html>
-<html lang="en">
+<html class="no-js" lang="">
 
 <head>
   <meta charset="utf-8">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Collab Cloud IDE</title>
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <!-- Start - Replacement by Webpack -->
-  <!-- Load External Realtime JavaScript Client -->
-  <link href="https://www.gstatic.com/realtime/quickstart-styles.css" type="text/css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="styles/main.css">
+  <link href="https://www.gstatic.com/realtime/quickstart-styles.css" rel="stylesheet" />
   <script src="https://apis.google.com/js/api.js"></script>
   <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
-  <!-- End - Replacement by Webpack -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/themes/default/style.min.css"
+  />
 </head>
 
 <body>
   <!--[if lt IE 10]>
       <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-  <div id="app-container"></div>
-  <script src="dist/build.js"></script>
+
+  <div class='container'>
+    <div class="row row-no-padding">
+      <div class="col-xs-1 no-float panel text-center">
+        <span class="h4">NUSCollab</span>
+        <button class="btn btn-warning btn-block" style="margin-top:10px" id="auth_button">Authorize</button>
+        <button class="btn btn-success btn-block" style="margin-top:10px" id="open_button">Open</button>
+        <button class="btn btn-primary btn-block" style="margin-top:10px" id="push_button">Push</button>
+        <button class="btn btn-danger btn-block" style="margin-top:10px" id="delete_button">Delete</button>
+      </div>
+      <div class="col-xs-3 no-float tree">
+        <div id="navigation"></div>
+      </div>
+      <div class="col-xs-8 no-float">
+        <div id="editor"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.6/lodash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/jstree.min.js"></script>
+  <script src="https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 
 </html>
