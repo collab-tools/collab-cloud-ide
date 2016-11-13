@@ -119,7 +119,6 @@ function createFile() {
   realtimeUtils.createRealtimeFile(selected.id, function (createResponse) {
     var mappings = {};
     mappings[selected.id] = createResponse.id
-    console.log(mappings);
     $.ajax({
       url: "/api/mapping?repo=" + activeProject.githubRepoName,
       type: "PUT",
@@ -150,7 +149,7 @@ function onFileInitialize(model) {
 // After a file has been initialized and loaded, we can access the
 // document. We will wire up the data model to the UI.
 function onFileLoaded(doc) {
-  var collaborativeString = doc.getModel().getRoot().get('collabString');
+  collaborativeString = doc.getModel().getRoot().get('collabString');
   wireTextBoxes(collaborativeString);
 }
 
@@ -185,18 +184,17 @@ var pushBtn = document.getElementById('push_button');
 pushBtn.classList.add('visible');
 pushBtn.addEventListener('click', function () {
   if (activeFile) {
-
-  }
-});
-
-var deleteBtn = document.getElementById('delete_button');
-deleteBtn.classList.add('visible');
-deleteBtn.addEventListener('click', function () {
-  if (selected && selected.parent !== '#') {
-    // get mapping, load real time id
-
-    // if no mapping, call realtime to create file
-
-    // set meta attributes of currently opened file
+    console.log(collaborativeString.getText());
+    $.ajax({
+      url: "/api/git/file?repo=" + activeProject.githubRepoName + '&owner=' + activeProject.githubRepoOwner + '&path=' + activeFile.id,
+      type: "PUT",
+      data: { content: collaborativeString.getText() },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Authorization', 'bearer ' + token);
+      },
+      success: function (payload) {
+        console.log(payload);
+      }
+    });
   }
 });
