@@ -66,7 +66,7 @@ app.use('/api', routes);
 app.use(express.static('client'));
 
 // if error is not an instanceOf APIError, convert it.
-const APIError = require(`${rootApp}/helper/api.error`); //eslint-disable-line
+const APIError = require(`${rootApp}/helpers/api.error`); //eslint-disable-line
 app.use((err, req, res, next) => {
   if (!(err instanceof APIError)) {
     const apiError = new APIError(err.message, err.status, err.isPublic);
