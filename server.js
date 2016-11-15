@@ -12,8 +12,6 @@ import httpStatus from 'http-status';
 import morgan from 'morgan';
 import redis from 'redis';
 import winston from 'winston';
-import APIError from './server/helpers/api.error';
-import routes from './server/routes/index.route';
 
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
 
@@ -21,6 +19,9 @@ Promise.promisifyAll(redis.RedisClient.prototype);
 Promise.promisifyAll(redis.Multi.prototype);
 
 const app = express();
+
+const isProduction = app.get('env') === 'production';
+const rootApp = isProduction ? `${__dirname}/dist` : `${__dirname}/server`;
 
 // Logger Configurations
 // ====================================================
@@ -60,10 +61,12 @@ app.use(bodyParser.urlencoded({
   extended: true,
 }));
 
+const routes = require(`${rootApp}/routes/index.route`); //eslint-disable-line
 app.use('/api', routes);
 app.use(express.static('client'));
 
 // if error is not an instanceOf APIError, convert it.
+const APIError = require(`${rootApp}/helper/api.error`); //eslint-disable-line
 app.use((err, req, res, next) => {
   if (!(err instanceof APIError)) {
     const apiError = new APIError(err.message, err.status, err.isPublic);
